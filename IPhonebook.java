@@ -9,8 +9,10 @@ public interface IPhonebook{
     public boolean add(String name,String number);
     public boolean remove(Contact contact);
     public boolean remove(String name,String number);
+    public boolean remove(ContactInfoSelector selector,String target);
     public Contact set(int index,Contact contact);
     public Contact set(int index,String name,String number);
+    public boolean set(ContactInfoSelector selector,String target,String newName,String newNumber);
     public Contact remove(int index);
     public Contact get(int index);
     public String queryName(String numberTarget);

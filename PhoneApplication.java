@@ -27,8 +27,18 @@ public class PhoneApplication implements ClientInterface {
     }
 
     @Override
+    public boolean removeContact(ContactInfoSelector selector,String target) {
+        return phonebook.remove(selector,target);
+    }
+
+    @Override
     public Contact overwriteContact(int index, String name, String number) {
         return phonebook.set(index,name,number);
+    }
+
+    @Override
+    public boolean overwriteContact(ContactInfoSelector selector,String target,String newName,String newNumber) {
+        return phonebook.set(selector,target,newName,newNumber);
     }
 
     @Override

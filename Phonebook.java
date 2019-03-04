@@ -148,10 +148,39 @@ public class Phonebook implements IPhonebook {
     public Contact set(int index, String name, String number) {
             return this.set(index,new Contact(name,number));
     }
+    @Override 
+    public boolean set(ContactInfoSelector selector,String target,String newName,String newNumber)
+    {
+        validateTarget(target,selector);
+        Contact c=new Contact(newName,newNumber);
+            for(ListIterator<Contact> it=this.contacts.listIterator();it.hasNext();)
+            {
+                switch(selector)
+                {
+                    case NAME:if(it.next().getName().equalsIgnoreCase(target)){it.set(c); return true;}break;
+                    case NUMBER:if(it.next().getNumber().equalsIgnoreCase(target)){it.set(c); return true;}break;
+                }
+            }
+        return false;
+    }
 
     @Override
     public Contact remove(int index) {
         return this.contacts.remove(index);
+    }
+    @Override
+    public boolean remove(ContactInfoSelector selector, String target)
+    {
+        validateTarget(target,selector);
+            for(ListIterator<Contact> it=this.contacts.listIterator();it.hasNext();)
+            {
+                switch(selector)
+                {
+                    case NAME:if(it.next().getName().equalsIgnoreCase(target)){it.remove(); return true;}break;
+                    case NUMBER:if(it.next().getNumber().equalsIgnoreCase(target)){it.remove(); return true;}break;
+                }
+            }
+        return false;
     }
 
     @Override

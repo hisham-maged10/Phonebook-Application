@@ -5,6 +5,7 @@ public abstract class GUI
 {
     private final String INDEX="Via Index (will print all the phonenumbers)";
     private final String INFO="Via Info";
+    private final String SEARCH="Via Search Target";
     private static final Scanner input=new Scanner(System.in);
     public void doGUI(String header,String subheader,boolean choice,String... items)
     {
@@ -26,7 +27,7 @@ public abstract class GUI
             case ADD:this.Interaction(selector,"Add","Options",app,"Add a Contact","return to main menu");break;
             case REMOVE:
             case MODIFY:
-            case OVERWRITE: this.Interaction(selector,selector.getName()+" Contact Menu","Options",app,INDEX,INFO);break;
+            case OVERWRITE: this.Interaction(selector,selector.getName()+" Contact Menu","Options",app,INDEX,INFO,SEARCH);break;
             case QUERY:this.Interaction(selector,"Query Menu","Options",app,"Query by Name","Query by Number","Return to main menu");break;
             case SAVE:this.Interaction(selector,"Save Menu","Options",app,"Save in same file","Save in another file","Return to main menu");break;
             case EXIT:this.Interaction(selector,"Exit Menu","Options",app,"Exit without saving","Save and Exit","Return to main menu");break;
@@ -174,13 +175,16 @@ public abstract class GUI
             switch(input.nextInt()*selector.getIntValue())
             {
                 //(index,info)
-                //add(3),remove(5,10),modify(7,14),overwrite(9,18),query(11)
+                //add(3),remove(5,10,15),modify(7,14),overwrite(9,18),query(11)
                 case 5:  
                 case 7:
-                case 9:doIndexInfoOperation(selector,INDEX,app);return;
+                case 9:doIndexInfoSearchOperation(selector,INDEX,app);return;
                 case 10:
                 case 14:
-                case 18:doIndexInfoOperation(selector,INFO,app);return;
+                case 18:doIndexInfoSearchOperation(selector,INFO,app);return;
+                case 5*3:
+                case 7*3:
+                case 9*3:doIndexInfoSearchOperation(selector,SEARCH,app);return;
                 default:System.err.println("Wrong input");
                         GUIClient.getInstance().mainMenuGUI();
             }
@@ -198,13 +202,14 @@ public abstract class GUI
             return;
         }
     }
-    private void doIndexInfoOperation(GUISelector selector,String operation,PhoneApplication app)
+    private void doIndexInfoSearchOperation(GUISelector selector,String operation,PhoneApplication app)
     {
         this.doGUI(selector.getName()+" via "+(operation.equals(INDEX)?"Index":"Information"),null,false);
             switch(operation)
             {
                 case INDEX:this.doIndexOperation(selector,app);return;
                 case INFO:this.doInfoOperation(selector,app);return;
+                case SEARCH:this.doSearchOperation(selector,app);return;
             }    
     }
     private void doIndexOperation(GUISelector selector,PhoneApplication app)
@@ -318,6 +323,103 @@ public abstract class GUI
                             }
                             return;
                 case OVERWRITE:System.err.println("Operation doesn't exist yet, wait for updates");return;
+                default:return;
+            }
+        }
+        catch(InputMismatchException ex)
+        {
+            System.err.println("Please only enter an integer for the choice,\n For name only enter Letters,\n for Number only enter digits");
+            return;
+        }
+        catch(NumberFormatException | NoSuchElementException  ex)
+        {
+            System.err.println("Wrong format has been entered or program is being terminated by an output source");
+            GUIClient.getInstance().mainMenuGUI();
+            return;
+        }
+        catch(IndexOutOfBoundsException ex)
+        {
+            System.err.println("Bad indexing!, press any key to return to main menu");
+            input.nextLine();
+            GUIClient.getInstance().mainMenuGUI();
+            return;
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+            GUIClient.getInstance().mainMenuGUI();
+            return;
+        }
+        catch(Throwable th)
+        {
+            th.printStackTrace();
+            GUIClient.getInstance().mainMenuGUI();
+            return;
+        }
+    }
+    private void doSearchOperation(GUISelector selector,PhoneApplication app)
+    {
+        try
+        {
+            int choice;
+            switch(selector)
+            {
+                case MODIFY:System.err.println("Operation doesn't exist yet, wait for updates");return;
+                case REMOVE:
+                            this.doGUI(null,"Remove Via:",true,"Name","Number","return");
+                             choice=input.nextInt();
+                            input.nextLine();
+                            if(choice==1)
+                            {
+                                System.out.print("Enter Name Target: ");
+                                System.out.println(app.removeContact(ContactInfoSelector.NAME,input.nextLine())?"Contact removed successfully":"Contact failed to be removed");
+                            }
+                            else if(choice==2)
+                            {
+                                System.out.print("Enter Number Target: ");
+                                System.out.println(app.removeContact(ContactInfoSelector.NUMBER,input.nextLine())?"Contact removed successfully":"Contact failed to be removed");
+                           }
+                            else if(choice==3)
+                            {
+                                return;
+                            }
+                            else{
+                                System.err.println("Option number unlisted, try again");
+                                this.doSearchOperation(selector,app);return;
+                            }
+                            return;
+                case OVERWRITE:
+                            this.doGUI(null,"Search and Overwrite with:",true,"Name","Number","return");
+                            choice=input.nextInt();
+                            input.nextLine();
+                            if(choice==1)
+                            {
+                                
+                                System.out.print("Enter search target: ");
+                                String target=input.nextLine();
+                                System.out.print("Enter new Name: ");
+                                String newName=input.nextLine();
+                                System.out.print("Enter new Number: ");
+                                System.out.println(app.overwriteContact(ContactInfoSelector.NAME,target,newName,input.nextLine())?"Contact Overwritten successfully":"Contact failed to be Overwritten");
+                            }
+                            else if(choice==2)
+                            {
+                                System.out.print("Enter search target: ");
+                                String target=input.nextLine();
+                                System.out.print("Enter new Name: ");
+                                String newName=input.nextLine();
+                                System.out.print("Enter new Number: ");
+                                System.out.println(app.overwriteContact(ContactInfoSelector.NUMBER,target,newName,input.nextLine())?"Contact Overwritten successfully":"Contact failed to be Overwritten");
+                            }
+                            else if(choice==3)
+                            {
+                                return;
+                            }
+                            else{
+                                System.err.println("Option number unlisted, try again");
+                                this.doIndexOperation(selector,app);return;
+                            }
+                            return;
                 default:return;
             }
         }

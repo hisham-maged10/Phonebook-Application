@@ -7,7 +7,9 @@ public interface ClientInterface{
     public boolean addContact(String name,String number);
     public boolean removeContact(String name,String number);
     public Contact removeContact(int index);
+    public boolean removeContact(ContactInfoSelector selector,String target);
     public Contact overwriteContact(int index,String name,String number);
+    public boolean overwriteContact(ContactInfoSelector selector,String target,String newName,String newNumber);
     public String query(ContactInfoSelector selector,String target);
     public void displayAscending();
     public void displayDescending();
